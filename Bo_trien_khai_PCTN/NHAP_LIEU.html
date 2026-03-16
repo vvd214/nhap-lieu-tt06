@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống nhập liệu 03 biểu PCTN</title>
+  <style>
+    :root {
+      --primary:#9f1239;
+      --primary-dark:#881337;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#cbd5e1;
+      --line:#e2e8f0;
+      --ok:#166534;
+      --warn:#92400e;
+      --error:#b91c1c;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1200px;margin:0 auto;padding:20px}
+    .hero{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:16px;padding:24px;box-shadow:0 12px 32px rgba(0,0,0,.15);margin-bottom:18px}
+    .hero h1{margin:0 0 8px;font-size:30px;line-height:1.2}
+    .hero p{margin:6px 0;font-size:16px;opacity:.96}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+    .card h2{margin:0 0 10px;font-size:24px}
+    .sub{color:var(--muted);margin-bottom:12px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    @media (max-width:900px){.grid,.grid-3,.grid-4{grid-template-columns:1fr} .hero h1{font-size:24px}}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    input,select,textarea,button{font-size:16px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(159,18,57,.08)}
+    .hint{font-size:13px;color:var(--muted);margin-top:6px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+    button{padding:11px 16px;border:none;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{background:var(--primary-dark)}
+    .btn-secondary{background:#e2e8f0;color:#111827}
+    .btn-danger{background:#fee2e2;color:#991b1b}
+    .countbox{background:#f8fafc;border:1px solid var(--border);padding:10px 14px;border-radius:10px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid var(--line);padding:8px 10px;vertical-align:top}
+    th{background:#f1f5f9;position:sticky;top:0;z-index:1;text-align:center}
+    .table-wrap{overflow:auto;max-height:70vh;border:1px solid var(--border);border-radius:10px}
+    .section-row td{background:#fde2e8;font-weight:700;color:#881337}
+    .subsection-row td{background:#f8fafc;font-weight:700;color:#334155}
+    .code-col{width:80px;text-align:center;font-weight:700}
+    .unit-col{width:110px;text-align:center}
+    .num-input{text-align:right}
+    .meta-title{font-size:18px;font-weight:700;margin-bottom:10px}
+    .status{display:none;margin-top:14px;padding:14px;border-radius:10px;white-space:pre-line;font-weight:700}
+    .status.ok{display:block;background:#dcfce7;color:var(--ok);border:1px solid #86efac}
+    .status.warn{display:block;background:#fef3c7;color:var(--warn);border:1px solid #fcd34d}
+    .status.error{display:block;background:#fee2e2;color:var(--error);border:1px solid #fca5a5}
+    .small{font-size:13px;color:var(--muted)}
+    .required::after{content:" *";color:#dc2626}
+    .hidden{display:none !important}
+    .admin-lock{background:#fafafa}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.48);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}
+    .modal-card{width:min(560px,100%);background:#fff;border-radius:16px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+    .modal-card h3{margin:0 0 10px;font-size:22px}
+    .confirm-message{white-space:pre-line;line-height:1.6;background:#f8fafc;border:1px solid var(--border);padding:14px;border-radius:12px}
+    .admin-note{font-size:12px;color:var(--muted)}
+    .print-note{font-size:12px;color:#475569;margin-top:8px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Trang nhập liệu 03 biểu PCTN theo Thông tư 06/2025/TT-TTCP</h1>
+    <p>Biểu 01/PCTN, 02/PCTN, 03/PCTN được tích hợp trên 1 trang để các đơn vị nhập và gửi trực tiếp vào Google Sheets tổng hợp của Thanh tra tỉnh.</p>
+          </div>
+
+  
+  <div class="card">
+    <h2>1. Thông tin đơn vị</h2>
+    <div class="grid-3">
+      <div>
+        <label class="required" for="unitName">Đơn vị</label>
+        <select id="unitName"></select>
+      </div>
+      <div>
+        <label class="required" for="contactName">Người nhập</label>
+        <input id="contactName" />
+      </div>
+      <div>
+        <label class="required" for="contactPhone">Số điện thoại</label>
+        <input id="contactPhone" />
+      </div>
+    </div>
+
+    
+    <div style="margin-top:14px">
+      <label for="generalNote">Ghi chú chung</label>
+      <textarea id="generalNote" rows="3" placeholder="Nếu có lưu ý chung cho cả 03 biểu thì ghi tại đây"></textarea>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="btn-secondary" id="loadBtn">Lấy dữ liệu đã nhập trước đó</button>
+    </div>
+    <div id="loadInfoBox" class="status" style="margin-top:10px"></div>
+  </div>
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin-bottom:6px">2. Biểu số 01/PCTN</h2>
+        <div class="sub">Nhập đầy đủ các chỉ tiêu của Biểu 01/PCTN. Chỉ nhập số vào cột Số liệu.</div>
+      </div>
+      <div class="countbox">Số chỉ tiêu đã nhập: <span id="p01Count">0</span></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">MS</th>
+            <th>Nội dung</th>
+            <th style="width:110px">ĐVT</th>
+            <th style="width:180px">Số liệu</th>
+          </tr>
+        </thead>
+        <tbody id="p01Body"></tbody>
+      </table>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="btn-secondary" id="fillZeroBtn">Điền 0 cho ô trống</button>
+      <button type="button" class="btn-danger" id="clearP01Btn">Xóa số liệu Biểu 01</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin-bottom:6px">3. Biểu số 02/PCTN</h2>
+        <div class="sub">Danh sách các vụ tham nhũng, lãng phí, tiêu cực được phát hiện trong kỳ.</div>
+      </div>
+      <div class="countbox">Số dòng biểu 02: <span id="p02Count">1</span></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="p02Table">
+        <thead>
+          <tr>
+            <th style="width:70px">TT</th>
+            <th style="width:220px">Tên vụ</th>
+            <th style="width:250px">Tên cơ quan, tổ chức, đơn vị xảy ra sự việc</th>
+            <th style="width:220px">Cơ quan thụ lý, giải quyết vụ việc</th>
+            <th style="width:320px">Tóm tắt nội dung vụ việc</th>
+            <th style="width:180px">Ghi chú</th>
+            <th style="width:90px">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="p02Body"></tbody>
+      </table>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="btn-secondary" id="addP02RowBtn">+ Thêm dòng Biểu 02</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin-bottom:6px">4. Biểu số 03/PCTN</h2>
+        <div class="sub">Kết quả phát hiện, khắc phục các văn bản còn sơ hở, dễ bị lợi dụng gây ra tham nhũng, lãng phí, tiêu cực.</div>
+      </div>
+      <div class="countbox">Số dòng biểu 03: <span id="p03Count">1</span></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="p03Table">
+        <thead>
+          <tr>
+            <th style="width:70px">TT</th>
+            <th style="width:260px">Tên, số, ngày, tháng, năm</th>
+            <th style="width:220px">Cơ quan ban hành văn bản</th>
+            <th style="width:320px">Nội dung sơ hở, dễ bị lợi dụng</th>
+            <th style="width:120px">Đã khắc phục theo thẩm quyền</th>
+            <th style="width:120px">Chưa khắc phục xong</th>
+            <th style="width:260px">Nguyên nhân chưa khắc phục xong</th>
+            <th style="width:180px">Ghi chú</th>
+            <th style="width:90px">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="p03Body"></tbody>
+      </table>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="btn-secondary" id="addP03RowBtn">+ Thêm dòng Biểu 03</button>
+    </div>
+  </div>
+
+  
+  <div class="card">
+    <h2>5. Gửi dữ liệu</h2>
+    <div class="grid-3" style="margin-bottom:14px">
+      <div>
+        <label class="required" for="confirmUnitName">Xác nhận lại đơn vị trước khi gửi</label>
+        <select id="confirmUnitName"></select>
+        <div class="hint">Kiểm tra chính xác đơn vị của bạn trước khi gửi số liệu.</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button type="button" class="btn-primary" id="submitBtn">Gửi dữ liệu</button>
+      <button type="button" class="btn-secondary" id="exportPrintBtn">Xuất biểu sang Word</button>
+      <button type="button" class="btn-secondary" id="viewResultBtn">Xem biểu tổng hợp</button>
+    </div>
+    <div class="print-note">Nút "Xuất biểu sang Word" sẽ tải xuống 01 file Word (.doc) chứa đủ 03 biểu để đơn vị mở ra và in.</div>
+    <div id="statusBox" class="status"></div>
+  </div>
+
+  <div id="confirmBackdrop" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>Xác nhận gửi dữ liệu</h3>
+      <div id="confirmMessage" class="confirm-message"></div>
+      <div class="toolbar" style="justify-content:flex-end">
+        <button type="button" class="btn-secondary" id="reviewBtn">Xem lại</button>
+        <button type="button" class="btn-primary" id="confirmSubmitBtn">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ===================== CẤU HÌNH CẦN SỬA ===================== */
+/* File này không sử dụng reportPeriod và không gửi kỳ báo cáo lên Apps Script. */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSitc03Injykzmnu_mTgtlUr2lpnBBKZWFZSVNRh1Tq9LeXc19vv8dygyeoynN2MoI/exec';
+/* ============================================================= */
+
+function getScriptUrl(){
+  return WEB_APP_URL.trim();
+}
+
+function isInvalidScriptUrl(url){
+  const u = String(url || '').trim();
+  return !u ||
+    u === 'PASTE_YOUR_WEBAPP_EXEC_URL_HERE' ||
+    u.includes('script.googleusercontent.com/macros/echo') ||
+    !u.includes('/exec');
+}
+
+const UNITS = [{"code": "DV001", "name": "Văn phòng UBND", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV002", "name": "Sở Tài chính", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV003", "name": "Sở Nông nghiệp và Môi trường", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV004", "name": "Sở Xây dựng", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV005", "name": "Sở Tư pháp", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV006", "name": "Sở Công thương", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV007", "name": "Sở Văn hóa TT và DL", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV008", "name": "Sở Giáo dục và Đào tạo", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV009", "name": "Sở Khoa học và Công nghệ", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV010", "name": "Sở Y tế", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV011", "name": "Sở Nội vụ", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV012", "name": "Sở Ngoại vụ", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV013", "name": "Thanh tra tỉnh", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV014", "name": "Sở Dân tộc và Tôn giáo", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV015", "name": "Ban Quản lý KKTNS và Các KCN", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV016", "name": "Báo và Đài phát thanh truyền hình TH", "level": "Cấp tỉnh", "group": "Sở, ban, ngành", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV017", "name": "Phường Bỉm Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV018", "name": "Phường Đào Duy Từ", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV019", "name": "Phường Đông Quang", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV020", "name": "Phường Đông Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV021", "name": "Phường Đông Tiến", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV022", "name": "Phường Hạc Thành", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV023", "name": "Phường Hải Bình", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV024", "name": "Phường Hải Lĩnh", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV025", "name": "Phường Hàm Rồng", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV026", "name": "Phường Nam Sầm Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV027", "name": "Phường Nghi Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV028", "name": "Phường Ngọc Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV029", "name": "Phường Nguyệt Viên", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV030", "name": "Phường Quảng Phú", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV031", "name": "Phường Quang Trung", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV032", "name": "Phường Sầm Sơn", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV033", "name": "Phường Tân Dân", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV034", "name": "Phường Tĩnh Gia", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV035", "name": "Phường Trúc Lâm", "level": "Cấp xã", "group": "Phường", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV036", "name": "Xã An Nông", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV037", "name": "Xã Ba Đình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV038", "name": "Xã Bá Thước", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV039", "name": "Xã Bát Mọt", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV040", "name": "Xã Biện Thượng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV041", "name": "Xã Các Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV042", "name": "Xã Cẩm Tân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV043", "name": "Xã Cẩm Tú", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV044", "name": "Xã Cẩm Thạch", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV045", "name": "Xã Cẩm Thủy", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV046", "name": "Xã Cẩm Vân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV047", "name": "Xã Cổ Lũng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV048", "name": "Xã Công Chính", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV049", "name": "Xã Điền Lư", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV050", "name": "Xã Điền Quang", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV051", "name": "Xã Định Hòa", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV052", "name": "Xã Định Tân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV053", "name": "Xã Đồng Lương", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV054", "name": "Xã Đồng Tiến", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV055", "name": "Xã Đông Thành", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV056", "name": "Xã Giao An", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV057", "name": "Xã Hà Long", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV058", "name": "Xã Hà Trung", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV059", "name": "Xã Hậu Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV060", "name": "Xã Hiền Kiệt", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV061", "name": "Xã Hoa Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV062", "name": "Xã Hóa Quỳ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV063", "name": "Xã Hoạt Giang", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV064", "name": "Xã Hoằng Châu", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV065", "name": "Xã Hoằng Giang", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV066", "name": "Xã Hoằng Hóa", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV067", "name": "Xã Hoằng Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV068", "name": "Xã Hoằng Phú", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV069", "name": "Xã Hoằng Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV070", "name": "Xã Hoằng Tiến", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV071", "name": "Xã Hoằng Thanh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV072", "name": "Xã Hồ Vương", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV073", "name": "Xã Hồi Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV074", "name": "Xã Hợp Tiến", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV075", "name": "Xã Kiên Thọ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV076", "name": "Xã Kim Tân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV077", "name": "Xã Lam Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV078", "name": "Xã Linh Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV079", "name": "Xã Lĩnh Toại", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV080", "name": "Xã Luận Thành", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV081", "name": "Xã Lương Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV082", "name": "Xã Lưu Vệ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV083", "name": "Xã Mậu Lâm", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV084", "name": "Xã Minh Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV085", "name": "Xã Mường Chanh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV086", "name": "Xã Mường Lát", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV087", "name": "Xã Mường Lý", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV088", "name": "Xã Mường Mìn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV089", "name": "Xã Na Mèo", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV090", "name": "Xã Nam Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV091", "name": "Xã Nông Cống", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV092", "name": "Xã Nga An", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV093", "name": "Xã Nga Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV094", "name": "Xã Nga Thắng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV095", "name": "Xã Ngọc Lặc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV096", "name": "Xã Ngọc Liên", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV097", "name": "Xã Ngọc Trạo", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV098", "name": "Xã Nguyệt Ấn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV099", "name": "Xã Nhi Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV100", "name": "Xã Như Thanh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV101", "name": "Xã Như Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV102", "name": "Xã Pù Luông", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV103", "name": "Xã Pù Nhi", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV104", "name": "Xã Phú Lệ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV105", "name": "Xã Phú Xuân (Quan Hóa)", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV106", "name": "Xã Quan Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV107", "name": "Xã Quảng Bình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV108", "name": "Xã Quang Chiểu", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV109", "name": "Xã Quảng Chính", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV110", "name": "Xã Quảng Ninh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV111", "name": "Xã Quảng Ngọc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV112", "name": "Xã Quảng Yên", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV113", "name": "Xã Quý Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV114", "name": "Xã Quý Lương", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV115", "name": "Xã Sao Vàng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV116", "name": "Xã Sơn Điện", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV117", "name": "Xã Sơn Thủy", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV118", "name": "Xã Tam Chung", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV119", "name": "Xã Tam Lư", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV120", "name": "Xã Tam Thanh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV121", "name": "Xã Tân Ninh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV122", "name": "Xã Tân Tiến", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV123", "name": "Xã Tân Thành", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV124", "name": "Xã Tây Đô", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV125", "name": "Xã Tiên Trang", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV126", "name": "Xã Tống Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV127", "name": "Xã Tượng Lĩnh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV128", "name": "Xã Thạch Bình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV129", "name": "Xã Thạch Lập", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV130", "name": "Xã Thạch Quảng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV131", "name": "Xã Thanh Kỳ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV132", "name": "Xã Thanh Phong", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV133", "name": "Xã Thanh Quân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV134", "name": "Xã Thành Vinh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV135", "name": "Xã Thăng Bình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV136", "name": "Xã Thắng Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV137", "name": "Xã Thắng Lợi", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV138", "name": "Xã Thiên Phủ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV139", "name": "Xã Thiết Ống", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV140", "name": "Xã Thiệu Hóa", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV141", "name": "Xã Thiệu Quang", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV142", "name": "Xã Thiệu Tiến", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV143", "name": "Xã Thiệu Toán", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV144", "name": "Xã Thiệu Trung", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV145", "name": "Xã Thọ Bình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV146", "name": "Xã Thọ Lập", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV147", "name": "Xã Thọ Long", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV148", "name": "Xã Thọ Ngọc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV149", "name": "Xã Thọ Phú", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV150", "name": "Xã Thọ Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV151", "name": "Xã Thượng Ninh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV152", "name": "Xã Thường Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV153", "name": "Xã Triệu Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV154", "name": "Xã Triệu Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV155", "name": "Xã Trung Chính", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV156", "name": "Xã Trung Hạ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV157", "name": "Xã Trung Lý", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV158", "name": "Xã Trung Sơn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV159", "name": "Xã Trung Thành", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV160", "name": "Xã Trường Lâm", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV161", "name": "Xã Trường Văn", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV162", "name": "Xã Vạn Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV163", "name": "Xã Vạn Xuân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV164", "name": "Xã Văn Nho", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV165", "name": "Xã Văn Phú", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV166", "name": "Xã Vân Du", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV167", "name": "Xã Vĩnh Lộc", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV168", "name": "Xã Xuân Bình", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV169", "name": "Xã Xuân Chinh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV170", "name": "Xã Xuân Du", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV171", "name": "Xã Xuân Hòa", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV172", "name": "Xã Xuân Lập", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV173", "name": "Xã Xuân Tín", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV174", "name": "Xã Xuân Thái", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV175", "name": "Xã Yên Định", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV176", "name": "Xã Yên Khương", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV177", "name": "Xã Yên Ninh", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV178", "name": "Xã Yên Nhân", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV179", "name": "Xã Yên Phú", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV180", "name": "Xã Yên Thắng", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV181", "name": "Xã Yên Thọ", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}, {"code": "DV182", "name": "Xã Yên Trường", "level": "Cấp xã", "group": "Xã", "parent": "Tỉnh Thanh Hóa"}];
+const P01_ROWS = [{"type": "section", "label": "CHÍNH SÁCH, PHÁP LUẬT"}, {"type": "item", "key": "P01_1", "ms": "1", "label": "Số văn bản ban hành mới để thực hiện Luật PCTN và các văn bản hướng dẫn thi hành Luật PCTN", "unit": "Văn bản", "note": ""}, {"type": "item", "key": "P01_2", "ms": "2", "label": "Số văn bản được sửa đổi, bổ sung để thực hiện Luật PCTN và các văn bản hướng dẫn thi hành", "unit": "Văn bản", "note": ""}, {"type": "item", "key": "P01_3", "ms": "3", "label": "Số văn bản được bãi bỏ để thực hiện Luật PCTN và các văn bản hướng dẫn thi hành", "unit": "Văn bản", "note": ""}, {"type": "section", "label": "TUYÊN TRUYỀN, PHỔ BIẾN, GIÁO DỤC PHÁP LUẬT VỀ PHÒNG, CHỐNG THAM NHŨNG, TIÊU CỰC"}, {"type": "item", "key": "P01_4", "ms": "4", "label": "Số lớp tuyên truyền, quán triệt pháp luật về phòng, chống tham nhũng, tiêu cực được tổ chức", "unit": "Lớp", "note": ""}, {"type": "item", "key": "P01_5", "ms": "5", "label": "Số lượt cán bộ, công chức, viên chức, nhân dân tham gia các lớp tập huấn, quán triệt pháp luật về phòng, chống tham nhũng, tiêu cực", "unit": "Lượt người", "note": ""}, {"type": "item", "key": "P01_6", "ms": "6", "label": "Số lượng đầu sách, tài liệu về pháp luật phòng, chống tham nhũng được xuất bản", "unit": "Tài liệu", "note": ""}, {"type": "section", "label": "THANH TRA TRÁCH NHIỆM THỰC HIỆN PHÁP LUẬT VỀ PHÒNG, CHỐNG TNLPTC"}, {"type": "item", "key": "P01_7", "ms": "7", "label": "Tổng số cuộc thanh tra trách nhiệm thực hiện pháp luật về phòng, chống TNLPTC", "unit": "Cuộc", "note": ""}, {"type": "item", "key": "P01_8", "ms": "8", "label": "Số cuộc thanh tra trách nhiệm thực hiện pháp luật về phòng, chống TNLPTC đã ban hành kết luận", "unit": "Cuộc", "note": ""}, {"type": "item", "key": "P01_9", "ms": "9", "label": "Số đơn vị được thanh tra", "unit": "Đơn vị", "note": ""}, {"type": "subsection", "label": "Kiến nghị xử lý hành chính"}, {"type": "item", "key": "P01_10", "ms": "10", "label": "+ Tập thể", "unit": "Tập thể", "note": ""}, {"type": "item", "key": "P01_11", "ms": "11", "label": "+ Cá nhân", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Kiến nghị xử lý hình sự"}, {"type": "item", "key": "P01_12", "ms": "12", "label": "+ Số vụ", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_13", "ms": "13", "label": "+ Số đối tượng", "unit": "Đối tượng", "note": ""}, {"type": "section", "label": "PHÒNG NGỪA THAM NHŨNG TRONG CƠ QUAN, TỔ CHỨC, ĐƠN VỊ"}, {"type": "subsection", "label": "Kết quả thực hiện công khai, minh bạch về tổ chức và hoạt động"}, {"type": "item", "key": "P01_14", "ms": "14", "label": "Số cơ quan, tổ chức, đơn vị được kiểm tra việc thực hiện các quy định về công khai, minh bạch về tổ chức và hoạt động", "unit": "CQ, TC, ĐV", "note": ""}, {"type": "item", "key": "P01_15", "ms": "15", "label": "Số cơ quan, tổ chức, đơn vị bị phát hiện có vi phạm quy định về công khai, minh bạch về tổ chức và hoạt động", "unit": "CQ, TC, ĐV", "note": ""}, {"type": "subsection", "label": "Xây dựng và thực hiện định mức, tiêu chuẩn, chế độ"}, {"type": "item", "key": "P01_16", "ms": "16", "label": "Số văn bản về định mức, tiêu chuẩn, chế độ đã được ban hành mới", "unit": "Văn bản", "note": ""}, {"type": "item", "key": "P01_17", "ms": "17", "label": "Số văn bản về định mức, tiêu chuẩn, chế độ đã được sửa đổi, bổ sung, bãi bỏ", "unit": "Văn bản", "note": ""}, {"type": "item", "key": "P01_18", "ms": "18", "label": "Số cuộc thanh tra, kiểm tra việc thực hiện các quy định về định mức, tiêu chuẩn, chế độ", "unit": "Cuộc", "note": ""}, {"type": "item", "key": "P01_19", "ms": "19", "label": "Số vụ vi phạm các quy định về định mức, tiêu chuẩn, chế độ", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_20", "ms": "20", "label": "Số người vi phạm các quy định về định mức, tiêu chuẩn, chế độ", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_21", "ms": "21", "label": "Số người vi phạm các quy định về định mức, tiêu chuẩn, chế độ đã bị xử lý hành chính", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_22", "ms": "22", "label": "Số người vi phạm các quy định về định mức, tiêu chuẩn, chế độ đã bị xử lý hình sự", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_23", "ms": "23", "label": "Tổng giá trị các vi phạm về định mức, tiêu chuẩn, chế độ được kiến nghị thu hồi và bồi thường (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_24", "ms": "24", "label": "Tổng giá trị vi phạm định mức, tiêu chuẩn, chế độ đã được thu hồi và bồi thường", "unit": "Triệu đồng", "note": ""}, {"type": "subsection", "label": "Thực hiện quy tắc ứng xử của người có chức vụ, quyền hạn"}, {"type": "item", "key": "P01_25", "ms": "25", "label": "Số cơ quan, tổ chức, đơn vị đã được kiểm tra việc thực hiện quy tắc ứng xử của người có chức vụ, quyền hạn", "unit": "CQ, TC, ĐV", "note": ""}, {"type": "item", "key": "P01_26", "ms": "26", "label": "Số cán bộ, công chức, viên chức vi phạm quy tắc ứng xử, quy tắc đạo đức nghề nghiệp đã bị xử lý", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_27", "ms": "27", "label": "Số người đã nộp lại quà tặng cho đơn vị", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_28", "ms": "28", "label": "Giá trị quà tặng đã được nộp lại (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_29", "ms": "29", "label": "Số người bị xử lý do có vi phạm vì xung đột lợi ích", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_30", "ms": "30", "label": "Số người bị xử lý do có vi phạm về việc kinh doanh trong thời hạn không được kinh doanh sau khi thôi giữ chức vụ", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Chuyển đổi vị trí công tác của người có chức vụ, quyền hạn"}, {"type": "item", "key": "P01_31", "ms": "31", "label": "Số cán bộ, công chức, viên chức phải thực hiện chuyển đổi vị trí công tác nhằm phòng ngừa tham nhũng", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_32", "ms": "32", "label": "Số cán bộ, công chức, viên chức được chuyển đổi vị trí công tác nhằm phòng ngừa tham nhũng", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Cải cách hành chính, ứng dụng khoa học công nghệ trong quản lý và thanh toán không dùng tiền mặt"}, {"type": "item", "key": "P01_33", "ms": "33", "label": "Số dịch vụ công trực tuyến", "unit": "Thủ tục", "note": ""}, {"type": "item", "key": "P01_34", "ms": "34", "label": "Số dịch vụ công trực tuyến toàn trình", "unit": "Thủ tục", "note": ""}, {"type": "item", "key": "P01_35", "ms": "35", "label": "Số dịch vụ công trực tuyến một phần", "unit": "Thủ tục", "note": ""}, {"type": "item", "key": "P01_36", "ms": "36", "label": "Số cuộc kiểm tra, thanh tra việc thực hiện thanh toán không dùng tiền mặt", "unit": "Cuộc", "note": ""}, {"type": "item", "key": "P01_37", "ms": "37", "label": "Số vụ phát hiện vi phạm trong việc thực hiện thanh toán không dùng tiền mặt", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_38", "ms": "38", "label": "Tổng giá trị giao dịch qua Hệ thống thanh toán điện tử liên ngân hàng (1)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_39", "ms": "39", "label": "Tỷ trọng tiền mặt trên tổng phương tiện thanh toán (2)", "unit": "%", "note": ""}, {"type": "subsection", "label": "Thực hiện các quy định về kiểm soát tài sản, thu nhập của người có chức vụ, quyền hạn"}, {"type": "item", "key": "P01_40", "ms": "40", "label": "Số người đã thực hiện kê khai và công khai tài sản, thu nhập trong kỳ", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_41", "ms": "41", "label": "Số người được xác minh việc kê khai tài sản, thu nhập", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_42", "ms": "42", "label": "Số cơ quan, tổ chức, đơn vị đã được kiểm tra việc thực hiện các quy định về kê khai, công khai bản kê khai tài sản, thu nhập", "unit": "CQ, TC, ĐV", "note": ""}, {"type": "item", "key": "P01_43", "ms": "43", "label": "Số người bị kỷ luật do vi phạm quy định về kiểm soát tài sản, thu nhập", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_43_1", "ms": "43.1", "label": "Số người bị kỷ luật do kê khai tài sản, thu nhập không trung thực", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_43_2", "ms": "43.2", "label": "Số người bị kỷ luật do có vi phạm khác về kiểm soát tài sản, thu nhập", "unit": "Người", "note": ""}, {"type": "section", "label": "PHÁT HIỆN CÁC VỤ VIỆC THAM NHŨNG, LÃNG PHÍ, TIÊU CỰC TRONG CƠ QUAN, TỔ CHỨC, ĐƠN VỊ"}, {"type": "item", "key": "P01_44", "ms": "44", "label": "Tổng số vụ việc tham nhũng, tiêu cực được phát hiện trong kỳ", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_45", "ms": "45", "label": "Tổng số đối tượng có hành vi tham nhũng, tiêu cực được phát hiện trong kỳ", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_46", "ms": "46", "label": "Tổng số vụ việc gây lãng phí được phát hiện trong kỳ", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_47", "ms": "47", "label": "Tổng số đối tượng có hành vi gây lãng phí được phát hiện trong kỳ", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Qua công tác kiểm tra và tự kiểm tra của cơ quan, tổ chức, đơn vị"}, {"type": "item", "key": "P01_48", "ms": "48", "label": "Số vụ TNLPTC đã được phát hiện qua công tác kiểm tra của cơ quan quản lý nhà nước", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_49", "ms": "49", "label": "Số đối tượng có hành vi TNLPTC được phát hiện qua công tác kiểm tra của cơ quan quản lý nhà nước", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_50", "ms": "50", "label": "Số vụ TNLPTC được phát hiện qua công tác tự kiểm tra", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_51", "ms": "51", "label": "Số đối tượng có hành vi TNLPTC được phát hiện qua công tác tự kiểm tra", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_52", "ms": "52", "label": "Số vụ TNLPTC được phát hiện qua kiểm tra hoạt động chống TNLPTC trong cơ quan có chức năng phòng, chống TNLPTC", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_52A", "ms": "", "label": "- Trong đó số vụ tham nhũng được phát hiện qua kiểm tra hoạt động chống TNLPTC trong cơ quan thanh tra", "unit": "Vụ", "note": "Dòng phụ không có MS trong biểu; hệ thống gán mã kỹ thuật nội bộ."}, {"type": "item", "key": "P01_53", "ms": "53", "label": "Số đối tượng có hành vi TNLPTC được phát hiện qua kiểm tra trong cơ quan có chức năng phòng, chống TNLPTC", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_53A", "ms": "", "label": "- Trong đó số đối tượng có hành vi TNLPTC được phát hiện qua kiểm tra hoạt động chống TNLPTC trong cơ quan thanh tra", "unit": "Người", "note": "Dòng phụ không có MS trong biểu; hệ thống gán mã kỹ thuật nội bộ."}, {"type": "subsection", "label": "Qua hoạt động giám sát, thanh tra, kiểm toán"}, {"type": "item", "key": "P01_54", "ms": "54", "label": "Số vụ tham nhũng, tiêu cực được phát hiện thông qua hoạt động giám sát của cơ quan dân cử, đại biểu dân cử và xử lý đề nghị của cơ quan dân cử, đại biểu dân cử", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_55", "ms": "55", "label": "Số đối tượng có hành vi tham nhũng, tiêu cực được phát hiện thông qua hoạt động giám sát của cơ quan dân cử, đại biểu dân cử và xử lý đề nghị của cơ quan dân cử, đại biểu dân cử", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_56", "ms": "56", "label": "Số vụ tham nhũng, tiêu cực được phát hiện thông qua hoạt động thanh tra", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_57", "ms": "57", "label": "Số đối tượng có hành vi tham nhũng, tiêu cực được phát hiện qua hoạt động thanh tra", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_58", "ms": "58", "label": "Số vụ lãng phí được phát hiện qua hoạt động thanh tra", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_59", "ms": "59", "label": "Số đối tượng có hành vi gây lãng phí được phát hiện qua hoạt động thanh tra", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_60", "ms": "60", "label": "Số vụ tham nhũng, tiêu cực được phát hiện thông qua hoạt động kiểm toán", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_61", "ms": "61", "label": "Số đối tượng có hành vi tham nhũng, tiêu cực được phát hiện thông qua hoạt động kiểm toán", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_62", "ms": "62", "label": "Số vụ lãng phí được phát hiện qua hoạt động kiểm toán", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_63", "ms": "63", "label": "Số đối tượng có hành vi gây lãng phí được phát hiện qua hoạt động kiểm toán", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Qua xem xét phản ánh, báo cáo về hành vi tham nhũng, lãng phí, tiêu cực"}, {"type": "item", "key": "P01_64", "ms": "64", "label": "Số vụ việc có phản ánh, báo cáo về hành vi TNLPTC", "unit": "Vụ việc", "note": ""}, {"type": "item", "key": "P01_65", "ms": "65", "label": "Số vụ việc có phản ánh, báo cáo về hành vi TNLPTC đã được xem xét", "unit": "Vụ việc", "note": ""}, {"type": "item", "key": "P01_66", "ms": "66", "label": "Số vụ TNLPTC phát hiện thông qua xem xét nội dung phản ánh, báo cáo về hành vi TNLPTC", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_67", "ms": "67", "label": "Số đối tượng có hành vi TNLPTC phát hiện thông qua xem xét nội dung phản ánh, báo cáo về hành vi TNLPTC", "unit": "người", "note": ""}, {"type": "subsection", "label": "Qua công tác giải quyết khiếu nại, tố cáo"}, {"type": "item", "key": "P01_68", "ms": "68", "label": "Số vụ TNLPTC được phát hiện thông qua giải quyết khiếu nại, tố cáo", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_69", "ms": "69", "label": "Số đối tượng có hành vi TNLPTC phát hiện qua giải quyết khiếu nại, tố cáo", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Qua các hoạt động khác (ngoài những hoạt động nêu trên, nếu có)"}, {"type": "item", "key": "P01_70", "ms": "70", "label": "Số vụ TNLPTC được phát hiện thông qua các hoạt động khác", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_71", "ms": "71", "label": "Số đối tượng có hành vi TNLPTC phát hiện qua các hoạt động khác", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Qua điều tra tội phạm"}, {"type": "item", "key": "P01_72", "ms": "72", "label": "Số vụ án tham nhũng, tiêu cực (thuộc phạm vi quản lý) đã được cơ quan chức năng khởi tố", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_73", "ms": "73", "label": "Số đối tượng tham nhũng, tiêu cực (thuộc phạm vi quản lý) đã bị cơ quan chức năng khởi tố", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_74", "ms": "74", "label": "Số vụ án gây lãng phí (thuộc phạm vi quản lý) đã được cơ quan chức năng khởi tố", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_75", "ms": "75", "label": "Số đối tượng gây lãng phí (thuộc phạm vi quản lý) đã bị cơ quan chức năng khởi tố", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Bảo vệ, khen thưởng người tố cáo, phát hiện tham nhũng, lãng phí, tiêu cực"}, {"type": "item", "key": "P01_76", "ms": "76", "label": "Số người tố cáo hành vi TNLPTC được được bảo vệ theo quy định của pháp luật về tố cáo", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_77", "ms": "77", "label": "Số người tố cáo hành vi TNLPTC bị trả thù", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_78", "ms": "78", "label": "Số người đã bị xử lý do có hành vi trả thù người tố cáo", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_79", "ms": "79", "label": "Số người tố cáo hành vi TNLPTC đã được khen, thưởng", "unit": "Người", "note": ""}, {"type": "section", "label": "XỬ LÝ TRÁCH NHIỆM CỦA NGƯỜI ĐỨNG ĐẦU CƠ QUAN, TỔ CHỨC, ĐƠN VỊ KHI ĐỂ XẢY RA THAM NHŨNG, LÃNG PHÍ, TIÊU CỰC"}, {"type": "item", "key": "P01_80", "ms": "80", "label": "Số người đứng đầu, cấp phó người đứng đầu bị kết luận là thiếu trách nhiệm để xảy ra hành vi TNLPTC", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_81", "ms": "81", "label": "Số người đứng đầu, cấp phó người đứng đầu đã bị xử lý hình sự do thiếu trách nhiệm để xảy ra hành vi TNLPTC", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_82", "ms": "82", "label": "Số người đứng đầu, cấp phó người đứng đầu bị xử lý kỷ luật do thiếu trách nhiệm để xảy ra TNLPTC", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_82_1", "ms": "82.1", "label": "- Khiển trách", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_82_2", "ms": "82.2", "label": "- Cảnh cáo", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_82_3", "ms": "82.3", "label": "- Cách chức", "unit": "Người", "note": ""}, {"type": "section", "label": "XỬ LÝ THAM NHŨNG, LÃNG PHÍ, TIÊU CỰC TRONG CƠ QUAN, TỔ CHỨC, ĐƠN VỊ"}, {"type": "item", "key": "P01_83", "ms": "83", "label": "Số vụ án TNLPTC đã đưa ra xét xử (địa phương thống kê kết quả xét xử sơ thẩm của tòa án; bộ, ngành thống kê theo kết quả xét xử sơ thẩm đối với các vụ án xảy ra trong phạm vi quản lý trực tiếp)", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_84", "ms": "84", "label": "Số đối tượng bị kết án TNLPTC (địa phương thống kê kết quả xét xử sơ thẩm của tòa án; bộ, ngành thống kê theo kết quả xét xử sơ thẩm đối với các vụ án xảy ra trong phạm vi quản lý trực tiếp) trong đó:", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_84_1", "ms": "84.1", "label": "- Số đối tượng phạm tội TNLPTC ít nghiêm trọng", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_84_2", "ms": "84.2", "label": "- Số đối tượng phạm tội TNLPTC nghiêm trọng", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_84_3", "ms": "84.3", "label": "- Số đối tượng phạm tội TNLPTC rất nghiêm trọng", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_84_4", "ms": "84.4", "label": "- Sổ đối tượng phạm tội TNLPTC đặc biệt nghiêm trọng", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_85", "ms": "85", "label": "Số vụ việc TNLPTC đã được xử lý hành chính", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_86", "ms": "86", "label": "Số cán bộ, công chức, viên chức bị xử lý kỷ luật hành chính về hành vi TNLPTC", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_87", "ms": "87", "label": "Số vụ việc TNLPTC đã được phát hiện, đang được xem xét để xử lý (chưa có kết quả xử lý)", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_88", "ms": "88", "label": "Số đối tượng TNLPTC đã được phát hiện, đang được xem xét để xử lý (chưa có kết quả xử lý)", "unit": "Người", "note": ""}, {"type": "subsection", "label": "Tài sản bị TNLPTC, gây thiệt hại do TNLPTC đã phát hiện được"}, {"type": "item", "key": "P01_89", "ms": "89", "label": "Bằng tiền (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_90", "ms": "90", "label": "Đất đai", "unit": "m2", "note": ""}, {"type": "subsection", "label": "Tài sản TNLPTC, gây thiệt hại do TNLPTC đã được thu hồi, bồi thường"}, {"type": "item", "key": "P01_91", "ms": "91", "label": "Bằng tiền (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_91_1", "ms": "91.1", "label": "- Kết quả thu hồi tiền bằng biện pháp hành chính", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_91_2", "ms": "91.2", "label": "- Kết quả thu hồi tiền bằng biện pháp tư pháp", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_92", "ms": "92", "label": "Đất đai", "unit": "m2", "note": ""}, {"type": "item", "key": "P01_92_1", "ms": "92.1", "label": "- Kết quả thu hồi đất bằng biện pháp hành chính", "unit": "m2", "note": ""}, {"type": "item", "key": "P01_92_2", "ms": "92.2", "label": "- Kết quả thu hồi đất bằng biện pháp tư pháp", "unit": "m2", "note": ""}, {"type": "subsection", "label": "Tài sản TNLPTC, gây thiệt hại do TNLPTC không thể thu hồi, khắc phục được"}, {"type": "item", "key": "P01_93", "ms": "93", "label": "Bằng tiền (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_94", "ms": "94", "label": "Đất đai", "unit": "m2", "note": ""}, {"type": "section", "label": "PHÁT HIỆN, XỬ LÝ THAM NHŨNG, LÃNG PHÍ, TIÊU CỰC TRONG NGÀNH THANH TRA (số liệu này nằm trong số liệu tổng hợp về phát hiện, xử lý TNLPTC trong cơ quan, tổ chức, đơn vị)"}, {"type": "item", "key": "P01_95", "ms": "95", "label": "Tổng số vụ việc TNLPTC trong cơ quan thanh tra được phát hiện trong kỳ", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_96", "ms": "96", "label": "Tổng số đối tượng trong cơ quan thanh tra có hành vi TNLPTC được phát hiện trong kỳ", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_97", "ms": "97", "label": "Số vụ việc TNLPTC trong cơ quan thanh tra bị xử lý hình sự", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_98", "ms": "98", "label": "Số đối tượng TNLPTC trong cơ quan thanh tra bị xử lý hình sự", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_99", "ms": "99", "label": "Số vụ việc TNLPTC trong cơ quan thanh tra bị xử lý hành chính", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_100", "ms": "100", "label": "Số đối tượng TNLPTC trong cơ quan thanh tra bị xử lý kỷ luật", "unit": "Người", "note": ""}, {"type": "section", "label": "PHÒNG, CHỐNG THAM NHŨNG TRONG DOANH NGHIỆP, TỔ CHỨC KHU VỰC NGOÀI NHÀ NƯỚC"}, {"type": "item", "key": "P01_101", "ms": "101", "label": "Số công ty đại chúng, tổ chức tín dụng, tổ chức xã hội (quy định tại Khoản 1 Điều 80 Luật PCTN) thuộc phạm vi quản lý", "unit": "Tổ chức", "note": ""}, {"type": "item", "key": "P01_102", "ms": "102", "label": "Số công ty đại chúng, tổ chức tín dụng, tổ chức xã hội (quy định tại Khoản 1 Điều 80 Luật PCTN) được thanh tra, kiểm tra việc thực hiện pháp luật về PCTN", "unit": "Tổ chức", "note": ""}, {"type": "item", "key": "P01_103", "ms": "103", "label": "Số công ty đại chúng, tổ chức tín dụng, tổ chức xã hội (quy định tại Khoản 1 Điều 80 Luật PCTN) bị xử lý do có vi phạm pháp luật về PCTN", "unit": "Tổ chức", "note": ""}, {"type": "item", "key": "P01_104", "ms": "104", "label": "Số vụ tham nhũng trong khu vực ngoài nhà nước thuộc phạm vi quản lý được phát hiện", "unit": "Vụ", "note": ""}, {"type": "item", "key": "P01_105", "ms": "105", "label": "Số đối tượng có hành vi tham nhũng trong khu vực ngoài nhà nước thuộc phạm vi quản lý được phát hiện", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_106", "ms": "106", "label": "Số đối tượng có hành vi tham nhũng trong khu vực ngoài nhà nước thuộc phạm vi quản lý đã bị xử lý hình sự", "unit": "Người", "note": ""}, {"type": "item", "key": "P01_107", "ms": "107", "label": "Thiệt hại gây ra bởi các vụ tham nhũng trong khu vực ngoài nhà nước thuộc phạm vi quản lý (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}, {"type": "item", "key": "P01_108", "ms": "108", "label": "Kết quả thu hồi tài sản tham nhũng trong khu vực ngoài nhà nước thuộc phạm vi quản lý (tiền Việt Nam + ngoại tệ, tài sản khác được quy đổi ra tiền Việt Nam)", "unit": "Triệu đồng", "note": ""}];
+
+const unitNameEl = document.getElementById('unitName');
+const confirmUnitNameEl = document.getElementById('confirmUnitName');
+const p01Body = document.getElementById('p01Body');
+const p02Body = document.getElementById('p02Body');
+const p03Body = document.getElementById('p03Body');
+const statusBox = document.getElementById('statusBox');
+
+function escapeHtml(str){
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function buildUnitOptionsHtml(){
+  return '<option value="">-- Chọn đơn vị --</option>' +
+    UNITS.map(u => `
+      <option
+        value="${escapeHtml(u.name)}"
+        data-code="${escapeHtml(u.code)}"
+        data-level="${escapeHtml(u.level || '')}"
+        data-group="${escapeHtml(u.group || '')}"
+        data-parent="${escapeHtml(u.parent || '')}"
+      >${escapeHtml(u.name)}</option>
+    `).join('');
+}
+
+function initUnits(){
+  const optionsHtml = buildUnitOptionsHtml();
+  if (unitNameEl) unitNameEl.innerHTML = optionsHtml;
+  if (confirmUnitNameEl) confirmUnitNameEl.innerHTML = optionsHtml;
+}
+
+function getSelectedUnitOption(){
+  return unitNameEl.options[unitNameEl.selectedIndex] || null;
+}
+
+function getSelectedUnitCode(){
+  const opt = getSelectedUnitOption();
+  return opt ? (opt.dataset.code || '') : '';
+}
+
+function getConfirmUnitOption(){
+  return confirmUnitNameEl ? (confirmUnitNameEl.options[confirmUnitNameEl.selectedIndex] || null) : null;
+}
+
+function getConfirmUnitCode(){
+  const opt = getConfirmUnitOption();
+  return opt ? (opt.dataset.code || '') : '';
+}
+
+function isMatchedConfirmedUnit(){
+  const unitCode1 = String(getSelectedUnitCode() || '').trim();
+  const unitCode2 = String(getConfirmUnitCode() || '').trim();
+  const unitName1 = String(unitNameEl?.value || '').trim();
+  const unitName2 = String(confirmUnitNameEl?.value || '').trim();
+
+  if(!unitCode1 || !unitCode2) return false;
+  return unitCode1 === unitCode2 && unitName1 === unitName2;
+}
+
+function validateConfirmedUnit(){
+  const unitName1 = String(unitNameEl?.value || '').trim();
+  const unitName2 = String(confirmUnitNameEl?.value || '').trim();
+
+  if(!unitName1) return 'Chưa chọn đơn vị ở Mục 1.';
+  if(!unitName2) return 'Chưa chọn đơn vị xác nhận ở Mục 5.';
+  if(!isMatchedConfirmedUnit()) {
+    return 'Đơn vị xác nhận ở Mục 5 không trùng với đơn vị đã chọn ở Mục 1. Vui lòng kiểm tra lại đơn vị.';
+  }
+  return '';
+}
+
+function syncSubmitButtonState(showMessage = false){
+  const submitBtn = document.getElementById('submitBtn');
+  if(!submitBtn) return;
+  const confirmError = validateConfirmedUnit();
+  submitBtn.disabled = !!confirmError;
+  submitBtn.style.opacity = confirmError ? '0.6' : '1';
+  submitBtn.style.cursor = confirmError ? 'not-allowed' : 'pointer';
+
+  if(showMessage && confirmError){
+    showStatus('warn', confirmError);
+  }
+}
+
+function renderP01(){
+  p01Body.innerHTML = P01_ROWS.map(row => {
+    if(row.type === 'section') {
+      return `<tr class="section-row"><td colspan="4">${escapeHtml(row.label)}</td></tr>`;
+    }
+    if(row.type === 'subsection') {
+      return `<tr class="subsection-row"><td colspan="4">${escapeHtml(row.label)}</td></tr>`;
+    }
+    return `
+      <tr>
+        <td class="code-col">${escapeHtml(row.ms || '')}</td>
+        <td>${escapeHtml(row.label)}</td>
+        <td class="unit-col">${escapeHtml(row.unit || '')}</td>
+        <td>
+          <input class="num-input p01-input" type="number" step="any" data-key="${escapeHtml(row.key)}" placeholder="Nhập số liệu" />
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.p01-input').forEach(el => {
+    el.addEventListener('input', updateP01Count);
+  });
+  updateP01Count();
+}
+
+function updateP01Count(){
+  const count = [...document.querySelectorAll('.p01-input')].filter(i => String(i.value).trim() !== '').length;
+  document.getElementById('p01Count').textContent = count;
+}
+
+function addP02Row(data = {}){
+  const idx = p02Body.querySelectorAll('tr').length + 1;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input value="${escapeHtml(data.STT || idx)}" /></td>
+    <td><input value="${escapeHtml(data.TEN_VU || '')}" /></td>
+    <td><input value="${escapeHtml(data.TEN_CO_QUAN || '')}" /></td>
+    <td><input value="${escapeHtml(data.CO_QUAN_THU_LY || '')}" /></td>
+    <td><textarea rows="3">${escapeHtml(data.TOM_TAT || '')}</textarea></td>
+    <td><textarea rows="3">${escapeHtml(data.GHI_CHU || '')}</textarea></td>
+    <td><button type="button" class="btn-danger remove-row">Xóa</button></td>
+  `;
+  p02Body.appendChild(tr);
+  tr.querySelector('.remove-row').addEventListener('click', () => {
+    tr.remove();
+    recountP02();
+  });
+  recountP02();
+}
+
+function addP03Row(data = {}){
+  const idx = p03Body.querySelectorAll('tr').length + 1;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input value="${escapeHtml(data.STT || idx)}" /></td>
+    <td><input value="${escapeHtml(data.TEN_SO_NGAY_VB || '')}" /></td>
+    <td><input value="${escapeHtml(data.CO_QUAN_BAN_HANH || '')}" /></td>
+    <td><textarea rows="3">${escapeHtml(data.NOI_DUNG_SO_HO || '')}</textarea></td>
+    <td style="text-align:center"><input type="checkbox" ${data.DA_KHAC_PHUC ? 'checked' : ''} /></td>
+    <td style="text-align:center"><input type="checkbox" ${data.CHUA_KHAC_PHUC ? 'checked' : ''} /></td>
+    <td><textarea rows="3">${escapeHtml(data.NGUYEN_NHAN_CHUA || '')}</textarea></td>
+    <td><textarea rows="3">${escapeHtml(data.GHI_CHU || '')}</textarea></td>
+    <td><button type="button" class="btn-danger remove-row">Xóa</button></td>
+  `;
+  p03Body.appendChild(tr);
+  tr.querySelector('.remove-row').addEventListener('click', () => {
+    tr.remove();
+    recountP03();
+  });
+  recountP03();
+  syncSubmitButtonState(false);
+}
+
+function recountP02(){
+  document.getElementById('p02Count').textContent = p02Body.querySelectorAll('tr').length;
+}
+function recountP03(){
+  document.getElementById('p03Count').textContent = p03Body.querySelectorAll('tr').length;
+}
+
+function fillZeroP01(){
+  document.querySelectorAll('.p01-input').forEach(el => {
+    if(String(el.value).trim() === '') el.value = 0;
+  });
+  updateP01Count();
+}
+
+function clearP01(){
+  if(!confirm('Xóa toàn bộ số liệu Biểu 01?')) return;
+  document.querySelectorAll('.p01-input').forEach(el => el.value = '');
+  updateP01Count();
+}
+
+function showStatus(type, msg){
+  statusBox.className = `status ${type}`;
+  statusBox.textContent = msg;
+}
+
+function showLoadInfo(type, msg){
+  const box = document.getElementById('loadInfoBox');
+  box.className = `status ${type}`;
+  box.textContent = msg;
+}
+
+function buildScriptUrl(params = {}){
+  const url = new URL(getScriptUrl());
+  Object.entries(params).forEach(([k, v]) => {
+    if(v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  });
+  return url.toString();
+}
+
+async function fetchJsonFromScript(params = {}){
+  const res = await fetch(buildScriptUrl(params), { method: 'GET', cache: 'no-store' });
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch(e) {
+    throw new Error('Phản hồi không hợp lệ: ' + text);
+  }
+  return data;
+}
+
+async function getSpreadsheetIdFromWebApp(){
+  const currentScriptUrl = getScriptUrl();
+  if(isInvalidScriptUrl(currentScriptUrl)) {
+    throw new Error('Chưa cấu hình đúng URL Web App.');
+  }
+
+  const data = await fetchJsonFromScript();
+  const spreadsheetId = String(data?.spreadsheetId || '').trim();
+
+  if(!data?.success) {
+    throw new Error(data?.message || 'Web App không trả về trạng thái thành công.');
+  }
+  if(!spreadsheetId) {
+    throw new Error('Web App không trả về spreadsheetId.');
+  }
+  return spreadsheetId;
+}
+
+async function openSpreadsheetResult(){
+  try{
+    showStatus('warn', 'Đang mở trang kết quả...');
+    const spreadsheetId = await getSpreadsheetIdFromWebApp();
+    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+    window.open(spreadsheetUrl, '_blank');
+    showStatus('ok', 'Đã mở trang kết quả tổng hợp.');
+  }catch(err){
+    showStatus('error', 'Không mở được trang kết quả:\n' + err.message);
+  }
+}
+
+function normalizePhone(value){
+  return String(value || '').trim().replace(/\s+/g, '');
+}
+
+function getPayload(){
+  const selectedUnit = getSelectedUnitOption();
+  const unitCode = getSelectedUnitCode();
+  const meta = {
+    unitCode,
+    unitName: document.getElementById('unitName').value.trim(),
+    unitLevel: selectedUnit ? (selectedUnit.dataset.level || '') : '',
+    unitGroup: selectedUnit ? (selectedUnit.dataset.group || '') : '',
+    contactName: document.getElementById('contactName').value.trim(),
+    contactPhone: normalizePhone(document.getElementById('contactPhone').value),
+    note: document.getElementById('generalNote').value.trim()
+  };
+
+  const p01 = {};
+  document.querySelectorAll('.p01-input').forEach(el => {
+    const raw = String(el.value).trim();
+    if(raw !== '') p01[el.dataset.key] = Number(raw);
+  });
+
+  const p02 = [...p02Body.querySelectorAll('tr')].map(tr => {
+    const inputs = tr.querySelectorAll('input, textarea');
+    return {
+      STT: inputs[0].value.trim(),
+      TEN_VU: inputs[1].value.trim(),
+      TEN_CO_QUAN: inputs[2].value.trim(),
+      CO_QUAN_THU_LY: inputs[3].value.trim(),
+      TOM_TAT: inputs[4].value.trim(),
+      GHI_CHU: inputs[5].value.trim()
+    };
+  }).filter(row => row.TEN_VU || row.TEN_CO_QUAN || row.CO_QUAN_THU_LY || row.TOM_TAT || row.GHI_CHU);
+
+  const p03 = [...p03Body.querySelectorAll('tr')].map(tr => {
+    const controls = tr.querySelectorAll('input, textarea');
+    return {
+      STT: controls[0].value.trim(),
+      TEN_SO_NGAY_VB: controls[1].value.trim(),
+      CO_QUAN_BAN_HANH: controls[2].value.trim(),
+      NOI_DUNG_SO_HO: controls[3].value.trim(),
+      DA_KHAC_PHUC: controls[4].checked ? 'X' : '',
+      CHUA_KHAC_PHUC: controls[5].checked ? 'X' : '',
+      NGUYEN_NHAN_CHUA: controls[6].value.trim(),
+      GHI_CHU: controls[7].value.trim()
+    };
+  }).filter(row => row.TEN_SO_NGAY_VB || row.CO_QUAN_BAN_HANH || row.NOI_DUNG_SO_HO || row.DA_KHAC_PHUC || row.CHUA_KHAC_PHUC || row.NGUYEN_NHAN_CHUA || row.GHI_CHU);
+
+  return { meta, p01, p02, p03 };
+}
+
+function validatePayload(payload){
+  const confirmError = validateConfirmedUnit();
+  if(confirmError) return confirmError;
+  if(!payload.meta.unitName) return 'Chưa chọn đơn vị.';
+  if(!payload.meta.contactName) return 'Chưa nhập người nhập.';
+  if(!payload.meta.contactPhone) return 'Chưa nhập số điện thoại.';
+  if(Object.keys(payload.p01).length === 0 && payload.p02.length === 0 && payload.p03.length === 0) {
+    return 'Chưa có dữ liệu để gửi.';
+  }
+  return '';
+}
+
+async function submitAllConfirmed(){
+  const payload = getPayload();
+  const error = validatePayload(payload);
+  if(error) {
+    showStatus('warn', error);
+    return;
+  }
+  const currentScriptUrl = getScriptUrl();
+  if(isInvalidScriptUrl(currentScriptUrl)) {
+    showStatus('warn', 'Chưa cấu hình đúng URL Web App. Hãy kiểm tra lại biến WEB_APP_URL ở đầu code.');
+    return;
+  }
+
+  showStatus('warn', 'Đang gửi dữ liệu...');
+
+  try {
+    const res = await fetch(currentScriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(e) {
+      throw new Error('Phản hồi không hợp lệ: ' + text);
+    }
+    if(!data.success) throw new Error(data.message || 'Gửi không thành công.');
+    showStatus('ok',
+      `Đã gửi thành công.
+` +
+      `Đơn vị: ${payload.meta.unitName}
+` +
+      `Biểu 01: ${Object.keys(payload.p01).length} chỉ tiêu
+` +
+      `Biểu 02: ${payload.p02.length} dòng
+` +
+      `Biểu 03: ${payload.p03.length} dòng
+` +
+      `Thời gian máy chủ: ${data.serverTime || ''}`
+    );
+  } catch(err) {
+    showStatus('error', 'Có lỗi khi gửi dữ liệu:\n' + err.message);
+  }
+}
+
+function openSubmitConfirm(){
+  const payload = getPayload();
+  const error = validatePayload(payload);
+  if(error) {
+    showStatus('warn', error);
+    syncSubmitButtonState(false);
+    return;
+  }
+  document.getElementById('confirmMessage').textContent =
+    'Đơn vị Mục 1: ' + payload.meta.unitName + '\n' +
+    'Đơn vị xác nhận Mục 5: ' + (confirmUnitNameEl?.value || '') + '\n\n' +
+    'Hai đơn vị phải trùng khớp. Bạn đã chắc chắn dữ liệu đã kiểm tra đầy đủ trước khi gửi chưa?';
+  document.getElementById('confirmBackdrop').classList.remove('hidden');
+}
+
+function closeSubmitConfirm(){
+  document.getElementById('confirmBackdrop').classList.add('hidden');
+}
+
+document.getElementById('fillZeroBtn').addEventListener('click', fillZeroP01);
+document.getElementById('clearP01Btn').addEventListener('click', clearP01);
+document.getElementById('addP02RowBtn').addEventListener('click', () => addP02Row());
+document.getElementById('addP03RowBtn').addEventListener('click', () => addP03Row());
+document.getElementById('submitBtn').addEventListener('click', openSubmitConfirm);
+document.getElementById('viewResultBtn').addEventListener('click', openSpreadsheetResult);
+document.getElementById('reviewBtn').addEventListener('click', closeSubmitConfirm);
+document.getElementById('confirmSubmitBtn').addEventListener('click', async () => { closeSubmitConfirm(); await submitAllConfirmed(); });
+
+function setSelectedUnitByCodeOrName(unitCode, unitName){
+  const options = [...unitNameEl.options];
+  let target = options.find(opt => (opt.dataset.code || '') === String(unitCode || '').trim());
+  if(!target && unitName){
+    target = options.find(opt => (opt.value || '').trim() === String(unitName || '').trim());
+  }
+  if(target){
+    unitNameEl.value = target.value;
+    return true;
+  }
+  return false;
+}
+
+function applyLoadedPayload(payload){
+  const meta = payload.meta || {};
+
+  setSelectedUnitByCodeOrName(meta.unitCode, meta.unitName);
+  if (confirmUnitNameEl) confirmUnitNameEl.value = '';
+
+  document.getElementById('contactName').value = meta.contactName || '';
+  document.getElementById('contactPhone').value = meta.contactPhone || '';
+  document.getElementById('generalNote').value = meta.note || '';
+
+  const p01 = payload.p01 || {};
+  document.querySelectorAll('.p01-input').forEach(el => {
+    const key = el.dataset.key;
+    const val = p01[key];
+    el.value = (val === undefined || val === null || val === '') ? '' : val;
+  });
+  updateP01Count();
+
+  p02Body.innerHTML = '';
+  const p02Rows = Array.isArray(payload.p02) && payload.p02.length ? payload.p02 : [{}];
+  p02Rows.forEach(row => addP02Row(row));
+  recountP02();
+
+  p03Body.innerHTML = '';
+  const p03Rows = Array.isArray(payload.p03) && payload.p03.length ? payload.p03 : [{}];
+  p03Rows.forEach(row => addP03Row(row));
+  recountP03();
+}
+
+async function loadPreviousSubmission(){
+  const payload = getPayload();
+  if(!payload.meta.unitCode && !payload.meta.unitName) {
+    showLoadInfo('warn', 'Chưa chọn đơn vị.');
+    return;
+  }
+
+  const currentScriptUrl = getScriptUrl();
+  if(isInvalidScriptUrl(currentScriptUrl)) {
+    showLoadInfo('warn', 'Chưa cấu hình đúng URL Web App. Hãy dán link .../exec và không dùng link script.googleusercontent.com/macros/echo...');
+    return;
+  }
+
+  showLoadInfo('warn', 'Đang lấy dữ liệu đã nhập trước đó...');
+
+  try {
+    const data = await fetchJsonFromScript({
+      action: 'getSubmission',
+      unitCode: payload.meta.unitCode,
+      unitName: payload.meta.unitName
+    });
+
+    if(!data.success) throw new Error(data.message || 'Không lấy được dữ liệu.');
+    if(!data.payload) throw new Error('Máy chủ không trả payload.');
+
+    applyLoadedPayload(data.payload);
+
+    const foundText = data.found ? 'Đã nạp dữ liệu cũ thành công.' : 'Chưa có dữ liệu cũ, đã nạp biểu mẫu trống cho đúng đơn vị.';
+    const updatedText = data.updatedAt ? ('\nCập nhật gần nhất: ' + data.updatedAt) : '';
+    showLoadInfo(data.found ? 'ok' : 'warn',
+      foundText + '\n' +
+      'Đơn vị: ' + (data.payload.meta.unitName || data.payload.meta.unitCode || '') +
+      updatedText
+    );
+  } catch(err) {
+    showLoadInfo('error', 'Có lỗi khi lấy dữ liệu:\n' + err.message);
+  }
+}
+
+
+function formatNumberForPrint(value){
+  const s = String(value ?? '').trim();
+  if(s === '') return '';
+  const n = Number(s);
+  if(Number.isFinite(n)) {
+    return n.toLocaleString('vi-VN');
+  }
+  return s;
+}
+
+function buildP01PrintRows(){
+  return P01_ROWS.map(row => {
+    if(row.type === 'section'){
+      return `<tr class="section"><td colspan="5">${escapeHtml(row.label)}</td></tr>`;
+    }
+    if(row.type === 'subsection'){
+      return `<tr class="subsection"><td colspan="5">${escapeHtml(row.label)}</td></tr>`;
+    }
+    const input = document.querySelector(`.p01-input[data-key="${row.key}"]`);
+    const value = input ? formatNumberForPrint(input.value) : '';
+    return `<tr>
+      <td class="center">${escapeHtml(row.ms || '')}</td>
+      <td>${escapeHtml(row.label || '')}</td>
+      <td class="center">${escapeHtml(row.unit || '')}</td>
+      <td class="right">${escapeHtml(value)}</td>
+      <td></td>
+    </tr>`;
+  }).join('');
+}
+
+function collectTableRows(tbodySelector, fieldNames){
+  return [...document.querySelectorAll(`${tbodySelector} tr`)].map(tr => {
+    const cells = [...tr.querySelectorAll('input, textarea')].slice(0, fieldNames.length);
+    const obj = {};
+    fieldNames.forEach((name, idx) => {
+      obj[name] = (cells[idx]?.value || '').trim();
+    });
+    return obj;
+  }).filter(row => Object.values(row).some(v => v !== ''));
+}
+
+function buildRowsHtml(rows, keys){
+  if(!rows.length){
+    return `<tr><td colspan="${keys.length}" class="center">Không phát sinh</td></tr>`;
+  }
+  return rows.map(row => `<tr>${keys.map((k, idx) => {
+    const cls = idx === 0 ? 'center' : '';
+    return `<td class="${cls}">${escapeHtml(row[k] || '')}</td>`;
+  }).join('')}</tr>`).join('');
+}
+
+function exportWordDocument(){
+  const payload = getPayload();
+  const unitLabel = payload.meta.unitName || payload.meta.unitCode || '';
+  if(!unitLabel){
+    showStatus('warn', 'Chưa chọn đơn vị để xuất biểu.');
+    return;
+  }
+
+  const p02Rows = collectTableRows('#p02Body', ['STT','TEN_VU','TEN_CO_QUAN','CO_QUAN_THU_LY','TOM_TAT','GHI_CHU']);
+  const p03Rows = [...document.querySelectorAll('#p03Body tr')].map(tr => {
+    const controls = tr.querySelectorAll('input, textarea');
+    return {
+      STT: (controls[0]?.value || '').trim(),
+      TEN_SO_NGAY_VB: (controls[1]?.value || '').trim(),
+      CO_QUAN_BAN_HANH: (controls[2]?.value || '').trim(),
+      NOI_DUNG_SO_HO: (controls[3]?.value || '').trim(),
+      DA_KHAC_PHUC: controls[4]?.checked ? 'X' : '',
+      CHUA_KHAC_PHUC: controls[5]?.checked ? 'X' : '',
+      NGUYEN_NHAN_CHUA: (controls[6]?.value || '').trim(),
+      GHI_CHU: (controls[7]?.value || '').trim()
+    };
+  }).filter(row => Object.values(row).some(v => v !== ''));
+
+  const wordHtml = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="ChatGPT">
+<meta name=Originator content="ChatGPT">
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+@page WordSection1{size:841.9pt 595.3pt;mso-page-orientation:landscape;margin:36pt 36pt 36pt 36pt;}
+div.WordSection1{page:WordSection1;}
+body{font-family:"Times New Roman",serif;color:#000;font-size:12pt}
+.page-break{page-break-before:always;}
+.title{text-align:center;font-weight:bold;font-size:14pt;margin-bottom:4pt}
+.subtitle{text-align:center;font-weight:bold;font-size:12.5pt;margin-bottom:8pt;text-transform:uppercase}
+.meta{margin:2pt 0 8pt 0;font-size:12pt}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #000;padding:4pt 6pt;vertical-align:top}
+th{text-align:center;font-weight:bold}
+.center{text-align:center}
+.right{text-align:right}
+.section td{font-weight:bold;background:#f2f2f2}
+.subsection td{font-weight:bold;font-style:italic;background:#fafafa}
+.note{font-size:11pt;margin-top:8pt}
+</style>
+</head>
+<body>
+<div class="WordSection1">
+  <div class="title">BIỂU 01/PCTN</div>
+  <div class="subtitle">Kết quả thực hiện công tác phòng, chống tham nhũng, lãng phí, tiêu cực</div>
+  <div class="meta"><b>Đơn vị:</b> ${escapeHtml(unitLabel)}</div>
+  <table>
+    <thead><tr><th style="width:8%">MS</th><th>Nội dung</th><th style="width:10%">ĐVT</th><th style="width:12%">Số liệu</th><th style="width:12%">Ghi chú</th></tr></thead>
+    <tbody>${buildP01PrintRows()}</tbody>
+  </table>
+  <div class="note">Người nhập: ${escapeHtml(payload.meta.contactName || '')} - Số điện thoại: ${escapeHtml(payload.meta.contactPhone || '')}</div>
+
+  <div class="page-break"></div>
+  <div class="title">BIỂU 02/PCTN</div>
+  <div class="subtitle">Danh sách các vụ tham nhũng, lãng phí, tiêu cực được phát hiện trong kỳ</div>
+  <div class="meta"><b>Đơn vị:</b> ${escapeHtml(unitLabel)}</div>
+  <table>
+    <thead><tr><th style="width:6%">TT</th><th style="width:18%">Tên vụ</th><th style="width:20%">Tên cơ quan, tổ chức, đơn vị xảy ra sự việc</th><th style="width:18%">Cơ quan thụ lý, giải quyết vụ việc</th><th>Tóm tắt nội dung vụ việc</th><th style="width:12%">Ghi chú</th></tr></thead>
+    <tbody>${buildRowsHtml(p02Rows, ['STT','TEN_VU','TEN_CO_QUAN','CO_QUAN_THU_LY','TOM_TAT','GHI_CHU'])}</tbody>
+  </table>
+
+  <div class="page-break"></div>
+  <div class="title">BIỂU 03/PCTN</div>
+  <div class="subtitle">Kết quả phát hiện, khắc phục các văn bản còn sơ hở, dễ bị lợi dụng gây ra tham nhũng, lãng phí, tiêu cực</div>
+  <div class="meta"><b>Đơn vị:</b> ${escapeHtml(unitLabel)}</div>
+  <table>
+    <thead><tr><th style="width:6%">TT</th><th style="width:18%">Tên, số, ngày, tháng, năm của văn bản</th><th style="width:15%">Cơ quan ban hành văn bản</th><th>Nội dung sơ hở, dễ bị lợi dụng</th><th style="width:10%">Đã khắc phục</th><th style="width:10%">Chưa khắc phục</th><th style="width:15%">Nguyên nhân chưa khắc phục xong</th><th style="width:10%">Ghi chú</th></tr></thead>
+    <tbody>${buildRowsHtml(p03Rows, ['STT','TEN_SO_NGAY_VB','CO_QUAN_BAN_HANH','NOI_DUNG_SO_HO','DA_KHAC_PHUC','CHUA_KHAC_PHUC','NGUYEN_NHAN_CHUA','GHI_CHU'])}</tbody>
+  </table>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+  const link = document.createElement('a');
+  const safeUnit = (unitLabel || 'don_vi').replace(/[\\/:*?"<>|]+/g, '_');
+  const objectUrl = URL.createObjectURL(blob);
+  link.href = objectUrl;
+  link.download = `03_bieu_PCTN_${safeUnit}.doc`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+
+  showStatus('ok', 'Đã xuất file Word thành công. Hãy mở file .doc vừa tải xuống để kiểm tra và in.');
+}
+
+document.getElementById('loadBtn').addEventListener('click', loadPreviousSubmission);
+document.getElementById('exportPrintBtn').addEventListener('click', exportWordDocument);
+
+if(unitNameEl){
+  unitNameEl.addEventListener('change', () => {
+    syncSubmitButtonState(false);
+  });
+}
+if(confirmUnitNameEl){
+  confirmUnitNameEl.addEventListener('change', () => {
+    syncSubmitButtonState(true);
+  });
+}
+
+initUnits();
+renderP01();
+addP02Row();
+addP03Row();
+syncSubmitButtonState(false);
+</script>
+</body>
+</html>
