@@ -481,8 +481,7 @@ async function handleUnitChange() {
     '',
     'Nhấn OK để xác nhận chuyển đơn vị và tự động lấy dữ liệu đã nhập trước đó của đơn vị mới.',
     'Nhấn Cancel để giữ nguyên đơn vị cũ.'
-  ].join('
-');
+  ].join('\n');
 
   const confirmed = window.confirm(message);
   if (!confirmed) {
