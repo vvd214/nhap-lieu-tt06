@@ -407,6 +407,8 @@ function updateSubmitState() {
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxyG2eK8d6brBqrubbkju3zdwmujgLPo7FvNNf15DuI00lxjtIZwIdQTzsugmLsOKBb/exec';
 const UNITS = [{"name": "Văn phòng UBND", "code": "DV001"}, {"name": "Sở Tài chính", "code": "DV002"}, {"name": "Sở Nông nghiệp và Môi trường", "code": "DV003"}, {"name": "Sở Xây dựng", "code": "DV004"}, {"name": "Sở Tư pháp", "code": "DV005"}, {"name": "Sở Công thương", "code": "DV006"}, {"name": "Sở Văn hóa TT và DL", "code": "DV007"}, {"name": "Sở Giáo dục và Đào tạo", "code": "DV008"}, {"name": "Sở Khoa học và Công nghệ", "code": "DV009"}, {"name": "Sở Y tế", "code": "DV010"}, {"name": "Sở Nội vụ", "code": "DV011"}, {"name": "Sở Ngoại vụ", "code": "DV012"}, {"name": "Thanh tra tỉnh", "code": "DV013"}, {"name": "Sở Dân tộc và Tôn giáo", "code": "DV014"}, {"name": "Ban Quản lý KKTNS và Các KCN", "code": "DV015"}, {"name": "Báo và Đài phát thanh truyền hình TH", "code": "DV016"}, {"name": "Phường Bỉm Sơn", "code": "DV017"}, {"name": "Phường Đào Duy Từ", "code": "DV018"}, {"name": "Phường Đông Quang", "code": "DV019"}, {"name": "Phường Đông Sơn", "code": "DV020"}, {"name": "Phường Đông Tiến", "code": "DV021"}, {"name": "Phường Hạc Thành", "code": "DV022"}, {"name": "Phường Hải Bình", "code": "DV023"}, {"name": "Phường Hải Lĩnh", "code": "DV024"}, {"name": "Phường Hàm Rồng", "code": "DV025"}, {"name": "Phường Nam Sầm Sơn", "code": "DV026"}, {"name": "Phường Nghi Sơn", "code": "DV027"}, {"name": "Phường Ngọc Sơn", "code": "DV028"}, {"name": "Phường Nguyệt Viên", "code": "DV029"}, {"name": "Phường Quảng Phú", "code": "DV030"}, {"name": "Phường Quang Trung", "code": "DV031"}, {"name": "Phường Sầm Sơn", "code": "DV032"}, {"name": "Phường Tân Dân", "code": "DV033"}, {"name": "Phường Tĩnh Gia", "code": "DV034"}, {"name": "Phường Trúc Lâm", "code": "DV035"}, {"name": "Xã An Nông", "code": "DV036"}, {"name": "Xã Ba Đình", "code": "DV037"}, {"name": "Xã Bá Thước", "code": "DV038"}, {"name": "Xã Bát Mọt", "code": "DV039"}, {"name": "Xã Biện Thượng", "code": "DV040"}, {"name": "Xã Các Sơn", "code": "DV041"}, {"name": "Xã Cẩm Tân", "code": "DV042"}, {"name": "Xã Cẩm Tú", "code": "DV043"}, {"name": "Xã Cẩm Thạch", "code": "DV044"}, {"name": "Xã Cẩm Thủy", "code": "DV045"}, {"name": "Xã Cẩm Vân", "code": "DV046"}, {"name": "Xã Cổ Lũng", "code": "DV047"}, {"name": "Xã Công Chính", "code": "DV048"}, {"name": "Xã Điền Lư", "code": "DV049"}, {"name": "Xã Điền Quang", "code": "DV050"}, {"name": "Xã Định Hòa", "code": "DV051"}, {"name": "Xã Định Tân", "code": "DV052"}, {"name": "Xã Đồng Lương", "code": "DV053"}, {"name": "Xã Đồng Tiến", "code": "DV054"}, {"name": "Xã Đông Thành", "code": "DV055"}, {"name": "Xã Giao An", "code": "DV056"}, {"name": "Xã Hà Long", "code": "DV057"}, {"name": "Xã Hà Trung", "code": "DV058"}, {"name": "Xã Hậu Lộc", "code": "DV059"}, {"name": "Xã Hiền Kiệt", "code": "DV060"}, {"name": "Xã Hoa Lộc", "code": "DV061"}, {"name": "Xã Hóa Quỳ", "code": "DV062"}, {"name": "Xã Hoạt Giang", "code": "DV063"}, {"name": "Xã Hoằng Châu", "code": "DV064"}, {"name": "Xã Hoằng Giang", "code": "DV065"}, {"name": "Xã Hoằng Hóa", "code": "DV066"}, {"name": "Xã Hoằng Lộc", "code": "DV067"}, {"name": "Xã Hoằng Phú", "code": "DV068"}, {"name": "Xã Hoằng Sơn", "code": "DV069"}, {"name": "Xã Hoằng Tiến", "code": "DV070"}, {"name": "Xã Hoằng Thanh", "code": "DV071"}, {"name": "Xã Hồ Vương", "code": "DV072"}, {"name": "Xã Hồi Xuân", "code": "DV073"}, {"name": "Xã Hợp Tiến", "code": "DV074"}, {"name": "Xã Kiên Thọ", "code": "DV075"}, {"name": "Xã Kim Tân", "code": "DV076"}, {"name": "Xã Lam Sơn", "code": "DV077"}, {"name": "Xã Linh Sơn", "code": "DV078"}, {"name": "Xã Lĩnh Toại", "code": "DV079"}, {"name": "Xã Luận Thành", "code": "DV080"}, {"name": "Xã Lương Sơn", "code": "DV081"}, {"name": "Xã Lưu Vệ", "code": "DV082"}, {"name": "Xã Mậu Lâm", "code": "DV083"}, {"name": "Xã Minh Sơn", "code": "DV084"}, {"name": "Xã Mường Chanh", "code": "DV085"}, {"name": "Xã Mường Lát", "code": "DV086"}, {"name": "Xã Mường Lý", "code": "DV087"}, {"name": "Xã Mường Mìn", "code": "DV088"}, {"name": "Xã Na Mèo", "code": "DV089"}, {"name": "Xã Nam Xuân", "code": "DV090"}, {"name": "Xã Nông Cống", "code": "DV091"}, {"name": "Xã Nga An", "code": "DV092"}, {"name": "Xã Nga Sơn", "code": "DV093"}, {"name": "Xã Nga Thắng", "code": "DV094"}, {"name": "Xã Ngọc Lặc", "code": "DV095"}, {"name": "Xã Ngọc Liên", "code": "DV096"}, {"name": "Xã Ngọc Trạo", "code": "DV097"}, {"name": "Xã Nguyệt Ấn", "code": "DV098"}, {"name": "Xã Nhi Sơn", "code": "DV099"}, {"name": "Xã Như Thanh", "code": "DV100"}, {"name": "Xã Như Xuân", "code": "DV101"}, {"name": "Xã Pù Luông", "code": "DV102"}, {"name": "Xã Pù Nhi", "code": "DV103"}, {"name": "Xã Phú Lệ", "code": "DV104"}, {"name": "Xã Phú Xuân (Quan Hóa)", "code": "DV105"}, {"name": "Xã Quan Sơn", "code": "DV106"}, {"name": "Xã Quảng Bình", "code": "DV107"}, {"name": "Xã Quang Chiểu", "code": "DV108"}, {"name": "Xã Quảng Chính", "code": "DV109"}, {"name": "Xã Quảng Ninh", "code": "DV110"}, {"name": "Xã Quảng Ngọc", "code": "DV111"}, {"name": "Xã Quảng Yên", "code": "DV112"}, {"name": "Xã Quý Lộc", "code": "DV113"}, {"name": "Xã Quý Lương", "code": "DV114"}, {"name": "Xã Sao Vàng", "code": "DV115"}, {"name": "Xã Sơn Điện", "code": "DV116"}, {"name": "Xã Sơn Thủy", "code": "DV117"}, {"name": "Xã Tam Chung", "code": "DV118"}, {"name": "Xã Tam Lư", "code": "DV119"}, {"name": "Xã Tam Thanh", "code": "DV120"}, {"name": "Xã Tân Ninh", "code": "DV121"}, {"name": "Xã Tân Tiến", "code": "DV122"}, {"name": "Xã Tân Thành", "code": "DV123"}, {"name": "Xã Tây Đô", "code": "DV124"}, {"name": "Xã Tiên Trang", "code": "DV125"}, {"name": "Xã Tống Sơn", "code": "DV126"}, {"name": "Xã Tượng Lĩnh", "code": "DV127"}, {"name": "Xã Thạch Bình", "code": "DV128"}, {"name": "Xã Thạch Lập", "code": "DV129"}, {"name": "Xã Thạch Quảng", "code": "DV130"}, {"name": "Xã Thanh Kỳ", "code": "DV131"}, {"name": "Xã Thanh Phong", "code": "DV132"}, {"name": "Xã Thanh Quân", "code": "DV133"}, {"name": "Xã Thành Vinh", "code": "DV134"}, {"name": "Xã Thăng Bình", "code": "DV135"}, {"name": "Xã Thắng Lộc", "code": "DV136"}, {"name": "Xã Thắng Lợi", "code": "DV137"}, {"name": "Xã Thiên Phủ", "code": "DV138"}, {"name": "Xã Thiết Ống", "code": "DV139"}, {"name": "Xã Thiệu Hóa", "code": "DV140"}, {"name": "Xã Thiệu Quang", "code": "DV141"}, {"name": "Xã Thiệu Tiến", "code": "DV142"}, {"name": "Xã Thiệu Toán", "code": "DV143"}, {"name": "Xã Thiệu Trung", "code": "DV144"}, {"name": "Xã Thọ Bình", "code": "DV145"}, {"name": "Xã Thọ Lập", "code": "DV146"}, {"name": "Xã Thọ Long", "code": "DV147"}, {"name": "Xã Thọ Ngọc", "code": "DV148"}, {"name": "Xã Thọ Phú", "code": "DV149"}, {"name": "Xã Thọ Xuân", "code": "DV150"}, {"name": "Xã Thượng Ninh", "code": "DV151"}, {"name": "Xã Thường Xuân", "code": "DV152"}, {"name": "Xã Triệu Lộc", "code": "DV153"}, {"name": "Xã Triệu Sơn", "code": "DV154"}, {"name": "Xã Trung Chính", "code": "DV155"}, {"name": "Xã Trung Hạ", "code": "DV156"}, {"name": "Xã Trung Lý", "code": "DV157"}, {"name": "Xã Trung Sơn", "code": "DV158"}, {"name": "Xã Trung Thành", "code": "DV159"}, {"name": "Xã Trường Lâm", "code": "DV160"}, {"name": "Xã Trường Văn", "code": "DV161"}, {"name": "Xã Vạn Lộc", "code": "DV162"}, {"name": "Xã Vạn Xuân", "code": "DV163"}, {"name": "Xã Văn Nho", "code": "DV164"}, {"name": "Xã Văn Phú", "code": "DV165"}, {"name": "Xã Vân Du", "code": "DV166"}, {"name": "Xã Vĩnh Lộc", "code": "DV167"}, {"name": "Xã Xuân Bình", "code": "DV168"}, {"name": "Xã Xuân Chinh", "code": "DV169"}, {"name": "Xã Xuân Du", "code": "DV170"}, {"name": "Xã Xuân Hòa", "code": "DV171"}, {"name": "Xã Xuân Lập", "code": "DV172"}, {"name": "Xã Xuân Tín", "code": "DV173"}, {"name": "Xã Xuân Thái", "code": "DV174"}, {"name": "Xã Yên Định", "code": "DV175"}, {"name": "Xã Yên Khương", "code": "DV176"}, {"name": "Xã Yên Ninh", "code": "DV177"}, {"name": "Xã Yên Nhân", "code": "DV178"}, {"name": "Xã Yên Phú", "code": "DV179"}, {"name": "Xã Yên Thắng", "code": "DV180"}, {"name": "Xã Yên Thọ", "code": "DV181"}, {"name": "Xã Yên Trường", "code": "DV182"}];
 let spreadsheetId = '';
+let previousUnitCode = '';
+let isProgrammaticUnitChange = false;
 
 function initUnits() {
   const opts = '<option value="">-- Chọn đơn vị --</option>' + UNITS.map(u => `<option value="${u.code}">${u.name}</option>`).join('');
@@ -414,6 +416,20 @@ function initUnits() {
   const confirmSel = document.getElementById('confirmUnitCode');
   if (sel) sel.innerHTML = opts;
   if (confirmSel) confirmSel.innerHTML = opts;
+  if (sel) {
+    sel.addEventListener('focus', () => {
+      previousUnitCode = sel.value || '';
+    });
+    sel.addEventListener('mousedown', () => {
+      previousUnitCode = sel.value || '';
+    });
+    sel.addEventListener('keydown', () => {
+      previousUnitCode = sel.value || '';
+    });
+    sel.addEventListener('change', handleUnitChange);
+  }
+  if (confirmSel) confirmSel.addEventListener('change', updateSubmitState);
+  previousUnitCode = sel ? (sel.value || '') : '';
 }
 function isValidWebAppUrl(url) {
   return /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(String(url || '').trim());
@@ -429,6 +445,59 @@ function buildScriptUrl(params={}) {
   return url.toString();
 }
 function renderServerTrace(data) { return; }
+
+async function handleUnitChange() {
+  const sel = document.getElementById('unitCode');
+  if (!sel) return;
+
+  if (isProgrammaticUnitChange) {
+    previousUnitCode = sel.value || '';
+    updateSubmitState();
+    return;
+  }
+
+  const newCode = sel.value || '';
+  const oldCode = previousUnitCode || '';
+
+  if (newCode === oldCode) {
+    updateSubmitState();
+    return;
+  }
+
+  if (!newCode) {
+    previousUnitCode = '';
+    updateSubmitState();
+    showLoadPending('Đã bỏ chọn đơn vị.');
+    return;
+  }
+
+  const newUnit = UNITS.find(u => u.code === newCode);
+  const oldUnit = UNITS.find(u => u.code === oldCode);
+  const message = [
+    'Bạn đang chuyển đơn vị nhập liệu.',
+    '',
+    'Đơn vị hiện tại: ' + (oldUnit?.name || 'Chưa chọn đơn vị'),
+    'Đơn vị mới: ' + (newUnit?.name || newCode),
+    '',
+    'Nhấn OK để xác nhận chuyển đơn vị và tự động lấy dữ liệu đã nhập trước đó của đơn vị mới.',
+    'Nhấn Cancel để giữ nguyên đơn vị cũ.'
+  ].join('
+');
+
+  const confirmed = window.confirm(message);
+  if (!confirmed) {
+    isProgrammaticUnitChange = true;
+    sel.value = oldCode;
+    isProgrammaticUnitChange = false;
+    updateSubmitState();
+    setStatusBox('loadStatus', 'Đã hủy đổi đơn vị. Hệ thống giữ nguyên đơn vị trước đó.', 'info');
+    return;
+  }
+
+  previousUnitCode = newCode;
+  updateSubmitState();
+  await loadSubmission(true);
+}
 
 async function fetchJsonFromScript(url, options={}) {
   let response;
@@ -502,7 +571,12 @@ function collectPayload() {
 function applyPayload(data) {
   if (!data) return;
   const meta = data.meta || {};
-  if (meta.unitCode) document.getElementById('unitCode').value = meta.unitCode;
+  if (meta.unitCode) {
+    isProgrammaticUnitChange = true;
+    document.getElementById('unitCode').value = meta.unitCode;
+    isProgrammaticUnitChange = false;
+    previousUnitCode = meta.unitCode;
+  }
   const confirmSel = document.getElementById('confirmUnitCode'); if (confirmSel) confirmSel.value = '';
   document.getElementById('contactName').value = meta.contactName || '';
   document.getElementById('contactPhone').value = String(meta.contactPhone || '').replace(/^'/,'');
@@ -608,16 +682,20 @@ async function getSpreadsheetIdFromWebApp() {
   if (!j.spreadsheetId) throw new Error('Web App chưa trả về spreadsheetId.');
   return j.spreadsheetId;
 }
-async function loadSubmission() {
+async function loadSubmission(skipUnitRequiredMessage = false) {
   const unitCode = document.getElementById('unitCode').value;
   const loadBtn = document.querySelector('button[onclick="loadSubmission()"]');
-  if (!unitCode) return showLoadInfo('Chưa chọn đơn vị.', false);
+  if (!unitCode) {
+    if (!skipUnitRequiredMessage) showLoadInfo('Chưa chọn đơn vị.', false);
+    return;
+  }
   showLoadPending('Đang lấy dữ liệu đã nhập trước đó...');
   if (loadBtn) loadBtn.disabled = true;
   try {
     const j = await fetchJsonFromScript(buildScriptUrl({ action: 'getSubmission', unitCode }), { method: 'GET' });
     if (!j.success) throw new Error(j.message || 'Không lấy được dữ liệu.');
     applyPayload(j.payload);
+    previousUnitCode = unitCode;
     showLoadInfo((j.message || 'Đã nạp dữ liệu cũ.') + (j.unitName ? '\nĐơn vị: ' + j.unitName : '') + (typeof j.durationMs === 'number' ? '\nThời gian server: ' + j.durationMs + ' ms' : ''), true);
   } catch (e) {
     showLoadInfo(e.message || String(e), false);
@@ -664,8 +742,7 @@ initUnits();
 computeAllFormulas();
 getSpreadsheetIdFromWebApp().catch(() => {});
 updateSubmitState();
-document.getElementById('unitCode')?.addEventListener('change', updateSubmitState);
-document.getElementById('confirmUnitCode')?.addEventListener('change', updateSubmitState);
+
 </script>
 </body>
 </html>
