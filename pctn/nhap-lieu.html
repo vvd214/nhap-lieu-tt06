@@ -257,6 +257,8 @@ const p01Body = document.getElementById('p01Body');
 const p02Body = document.getElementById('p02Body');
 const p03Body = document.getElementById('p03Body');
 const statusBox = document.getElementById('statusBox');
+let previousUnitCode = '';
+let isProgrammaticUnitChange = false;
 
 function escapeHtml(str){
   return String(str ?? '')
@@ -284,6 +286,76 @@ function initUnits(){
   const optionsHtml = buildUnitOptionsHtml();
   if (unitNameEl) unitNameEl.innerHTML = optionsHtml;
   if (confirmUnitNameEl) confirmUnitNameEl.innerHTML = optionsHtml;
+
+  if (unitNameEl) {
+    unitNameEl.addEventListener('focus', () => {
+      previousUnitCode = getSelectedUnitCode();
+    });
+    unitNameEl.addEventListener('mousedown', () => {
+      previousUnitCode = getSelectedUnitCode();
+    });
+    unitNameEl.addEventListener('keydown', () => {
+      previousUnitCode = getSelectedUnitCode();
+    });
+    unitNameEl.addEventListener('change', handleUnitChange);
+  }
+
+  previousUnitCode = getSelectedUnitCode();
+}
+
+async function handleUnitChange(){
+  if (!unitNameEl) return;
+
+  if (isProgrammaticUnitChange) {
+    previousUnitCode = getSelectedUnitCode();
+    syncSubmitButtonState(false);
+    return;
+  }
+
+  const newCode = getSelectedUnitCode();
+  const oldCode = previousUnitCode || '';
+
+  if (newCode === oldCode) {
+    syncSubmitButtonState(false);
+    return;
+  }
+
+  if (!newCode) {
+    previousUnitCode = '';
+    syncSubmitButtonState(false);
+    showLoadInfo('warn', 'Chưa chọn đơn vị.');
+    return;
+  }
+
+  const newUnit = UNITS.find(u => String(u.code || '').trim() === String(newCode || '').trim());
+  const oldUnit = UNITS.find(u => String(u.code || '').trim() === String(oldCode || '').trim());
+  const message = [
+    'Bạn đang chuyển đơn vị nhập liệu.',
+    '',
+    'Đơn vị hiện tại: ' + (oldUnit?.name || 'Chưa chọn đơn vị'),
+    'Đơn vị mới: ' + (newUnit?.name || unitNameEl.value || newCode),
+    '',
+    'Nhấn OK để xác nhận chuyển đơn vị và tự động lấy dữ liệu đã nhập trước đó của đơn vị mới.',
+    'Nhấn Cancel để giữ nguyên đơn vị cũ.'
+  ].join('\n');
+
+  const confirmed = window.confirm(message);
+  if (!confirmed) {
+    isProgrammaticUnitChange = true;
+    if (oldCode) {
+      setSelectedUnitByCodeOrName(oldCode, oldUnit?.name || '');
+    } else {
+      unitNameEl.value = '';
+    }
+    isProgrammaticUnitChange = false;
+    syncSubmitButtonState(false);
+    showLoadInfo('warn', 'Đã hủy đổi đơn vị. Hệ thống giữ nguyên đơn vị trước đó.');
+    return;
+  }
+
+  previousUnitCode = newCode;
+  syncSubmitButtonState(false);
+  await loadPreviousSubmission();
 }
 
 function getSelectedUnitOption(){
@@ -649,7 +721,10 @@ function setSelectedUnitByCodeOrName(unitCode, unitName){
 function applyLoadedPayload(payload){
   const meta = payload.meta || {};
 
+  isProgrammaticUnitChange = true;
   setSelectedUnitByCodeOrName(meta.unitCode, meta.unitName);
+  isProgrammaticUnitChange = false;
+  previousUnitCode = getSelectedUnitCode();
   if (confirmUnitNameEl) confirmUnitNameEl.value = '';
 
   document.getElementById('contactName').value = meta.contactName || '';
@@ -874,11 +949,6 @@ th{text-align:center;font-weight:bold}
 document.getElementById('loadBtn').addEventListener('click', loadPreviousSubmission);
 document.getElementById('exportPrintBtn').addEventListener('click', exportWordDocument);
 
-if(unitNameEl){
-  unitNameEl.addEventListener('change', () => {
-    syncSubmitButtonState(false);
-  });
-}
 if(confirmUnitNameEl){
   confirmUnitNameEl.addEventListener('change', () => {
     syncSubmitButtonState(true);
